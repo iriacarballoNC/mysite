@@ -11,60 +11,12 @@ import {
   loadSection,
   loadSections,
   loadCSS,
-  getMetadata,
 } from './aem.js';
-
-export async function loadTemplate(doc, templateName) {
-  if (document.body.classList.contains(templateName) && ['loaded', 'loading'].includes(document.body.dataset.templateStatus)) {
-    // already loaded or in the process of loading...nothing to do here
-    return;
-  }
-  try {
-    const cssPath = `${window.hlx.codeBasePath}/templates/${templateName}/${templateName}.css`;
-    const jsPath = `../templates/${templateName}/${templateName}.js`;
-
-    document.body.dataset.templateStatus = 'loading';
-
-    // Use Promise.all to load CSS and JS module concurrently
-    await Promise.all([
-      loadCSS(cssPath),
-      (async () => {
-        try {
-          const mod = await import(jsPath);
-          if (mod.default) {
-            await mod.default(doc);
-          }
-        } catch (error) {
-          console.error(`failed to load module for ${templateName}`, error);
-        }
-      })(),
-    ]);
-    document.body.dataset.templateStatus = 'loaded';
-  } catch (error) {
-    console.error(`failed to load template ${templateName}`, error);
-  }
-}
-
-/**
- * Builds all synthetic blocks in a container element.
- * @param {Element} main The container element
- */
-async function buildTemplate(main) {
-  try {
-    const templateName = getMetadata('template');
-    if (templateName) {
-      await loadTemplate(main, templateName.toLowerCase());
-    }
-  } catch (error) {
-    console.error('Template loading failed', error);
-  }
-}
 
 /**
  * Builds hero block and prepends to main in a new section.
  * @param {Element} main The container element
  */
-
 function buildHeroBlock(main) {
   const h1 = main.querySelector('h1');
   const picture = main.querySelector('picture');
@@ -111,10 +63,8 @@ export function decorateMain(main) {
   decorateButtons(main);
   decorateIcons(main);
   buildAutoBlocks(main);
-  buildTemplate(main);
   decorateSections(main);
   decorateBlocks(main);
-
 }
 
 /**

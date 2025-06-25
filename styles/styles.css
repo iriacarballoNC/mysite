@@ -255,9 +255,3 @@ main .section.highlight {
   margin: 0;
   padding: 40px 0;
 }
-
-main .section.dark-theme {
-    background-color: var(--dark-color);
-    color: white;
-    padding: 32px 0;
-}
